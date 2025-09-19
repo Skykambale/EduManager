@@ -1,399 +1,418 @@
 "use client"
 
 import { useState } from "react"
+import { motion } from "framer-motion"
+import {
+  Briefcase,
+  TrendingUp,
+  Users,
+  Calendar,
+  MapPin,
+  ExternalLink,
+  FileText,
+  Download,
+  Star,
+  Clock,
+} from "lucide-react"
 import Layout from "@/components/Layout"
-import { Building, MapPin, Calendar, DollarSign, User, Mail, Phone, FileText, ExternalLink, Clock } from "lucide-react"
 
-export default function StudentPlacementPage() {
-  const [placementInfo] = useState({
-    status: "PLACED", // PLACED, OFFERED, INTERVIEW, NOT_STARTED
-    company: "Google",
-    role: "Frontend Developer",
-    package: 1200000,
-    location: "Bangalore, India",
-    joiningDate: "2024-03-01",
-    offerDate: "2024-01-15",
-    hrContact: {
-      name: "Sarah Johnson",
-      email: "sarah.johnson@google.com",
-      phone: "+91 9876543210",
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1,
     },
-  })
+  },
+}
 
-  const [placementHistory] = useState([
+const itemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.5,
+    },
+  },
+}
+
+export default function StudentPlacement() {
+  const [activeTab, setActiveTab] = useState("opportunities")
+
+  const placementStats = [
+    {
+      title: "Applications Sent",
+      value: "12",
+      icon: FileText,
+      color: "from-blue-500 to-blue-600",
+      bgColor: "bg-blue-50 dark:bg-blue-900/20",
+    },
+    {
+      title: "Interviews Scheduled",
+      value: "5",
+      icon: Calendar,
+      color: "from-green-500 to-green-600",
+      bgColor: "bg-green-50 dark:bg-green-900/20",
+    },
+    {
+      title: "Offers Received",
+      value: "2",
+      icon: TrendingUp,
+      color: "from-purple-500 to-purple-600",
+      bgColor: "bg-purple-50 dark:bg-purple-900/20",
+    },
+    {
+      title: "Success Rate",
+      value: "42%",
+      icon: Star,
+      color: "from-orange-500 to-orange-600",
+      bgColor: "bg-orange-50 dark:bg-orange-900/20",
+    },
+  ]
+
+  const jobOpportunities = [
     {
       id: 1,
-      company: "Google",
-      role: "Frontend Developer",
-      status: "PLACED",
-      date: "2024-01-15",
-      package: 1200000,
-      location: "Bangalore",
+      title: "Frontend Developer",
+      company: "TechCorp Inc.",
+      location: "San Francisco, CA",
+      salary: "$75,000 - $95,000",
+      type: "Full-time",
+      posted: "2 days ago",
+      description: "Looking for a skilled React developer to join our growing team.",
+      requirements: ["React", "JavaScript", "CSS", "Git"],
+      status: "open",
     },
     {
       id: 2,
-      company: "Microsoft",
-      role: "Full Stack Developer",
-      status: "OFFERED",
-      date: "2024-01-10",
-      package: 1100000,
-      location: "Hyderabad",
+      title: "Full Stack Developer",
+      company: "StartupXYZ",
+      location: "Remote",
+      salary: "$80,000 - $100,000",
+      type: "Full-time",
+      posted: "1 week ago",
+      description: "Join our innovative team building the next generation of web applications.",
+      requirements: ["React", "Node.js", "MongoDB", "AWS"],
+      status: "applied",
     },
     {
       id: 3,
-      company: "Amazon",
-      role: "Software Engineer",
-      status: "REJECTED",
-      date: "2024-01-05",
-      package: 1300000,
-      location: "Chennai",
+      title: "Junior Web Developer",
+      company: "Digital Agency",
+      location: "New York, NY",
+      salary: "$60,000 - $75,000",
+      type: "Full-time",
+      posted: "3 days ago",
+      description: "Perfect opportunity for recent graduates to start their career.",
+      requirements: ["HTML", "CSS", "JavaScript", "WordPress"],
+      status: "open",
     },
-  ])
+  ]
 
-  const [documents] = useState([
-    { name: "Resume", status: "Approved", lastUpdated: "2024-01-10" },
-    { name: "Cover Letter", status: "Pending Review", lastUpdated: "2024-01-12" },
-    { name: "Portfolio", status: "Approved", lastUpdated: "2024-01-08" },
-    { name: "Certificates", status: "Approved", lastUpdated: "2024-01-05" },
-  ])
-
-  const [upcomingInterviews] = useState([
+  const interviews = [
     {
       id: 1,
-      company: "Netflix",
-      role: "React Developer",
-      date: "2024-02-01",
+      company: "TechCorp Inc.",
+      position: "Frontend Developer",
+      date: "2024-01-20",
       time: "10:00 AM",
-      type: "Technical Round",
+      type: "Video Call",
+      status: "scheduled",
       interviewer: "John Smith",
     },
     {
       id: 2,
-      company: "Spotify",
-      role: "Frontend Engineer",
-      date: "2024-02-03",
+      company: "StartupXYZ",
+      position: "Full Stack Developer",
+      date: "2024-01-18",
       time: "2:00 PM",
-      type: "HR Round",
-      interviewer: "Emily Davis",
+      type: "In-person",
+      status: "completed",
+      interviewer: "Sarah Johnson",
     },
-  ])
+    {
+      id: 3,
+      company: "Digital Agency",
+      position: "Junior Web Developer",
+      date: "2024-01-25",
+      time: "11:00 AM",
+      type: "Phone Call",
+      status: "scheduled",
+      interviewer: "Mike Wilson",
+    },
+  ]
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case "PLACED":
-        return "bg-green-100 text-green-800"
-      case "OFFERED":
-        return "bg-blue-100 text-blue-800"
-      case "INTERVIEW":
-        return "bg-yellow-100 text-yellow-800"
-      case "REJECTED":
-        return "bg-red-100 text-red-800"
-      case "NOT_STARTED":
-        return "bg-gray-100 text-gray-800"
+      case "open":
+        return "bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400"
+      case "applied":
+        return "bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400"
+      case "scheduled":
+        return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400"
+      case "completed":
+        return "bg-purple-100 text-purple-800 dark:bg-purple-900/20 dark:text-purple-400"
       default:
-        return "bg-gray-100 text-gray-800"
-    }
-  }
-
-  const getDocumentStatusColor = (status: string) => {
-    switch (status) {
-      case "Approved":
-        return "bg-green-100 text-green-800"
-      case "Pending Review":
-        return "bg-yellow-100 text-yellow-800"
-      case "Rejected":
-        return "bg-red-100 text-red-800"
-      default:
-        return "bg-gray-100 text-gray-800"
+        return "bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400"
     }
   }
 
   return (
     <Layout>
-      <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <h1 className="text-3xl font-bold text-gray-900">Placement Status</h1>
-          <div className="flex items-center space-x-2 text-sm text-gray-500">
-            <Calendar className="h-4 w-4" />
-            <span>{new Date().toLocaleDateString()}</span>
-          </div>
-        </div>
+      <motion.div variants={containerVariants} initial="hidden" animate="visible" className="space-y-6">
+        <motion.div variants={itemVariants}>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">Placement Portal</h1>
+          <p className="text-gray-600 dark:text-gray-400">
+            Explore job opportunities and track your placement progress
+          </p>
+        </motion.div>
 
-        {/* Current Placement Status */}
-        <div className="bg-white rounded-lg shadow">
-          <div className="px-6 py-4 border-b">
-            <h3 className="text-lg font-medium text-gray-900">Current Status</h3>
-          </div>
-          <div className="p-6">
-            {placementInfo.status === "PLACED" ? (
-              <div className="bg-green-50 border border-green-200 rounded-lg p-6">
-                <div className="flex items-center mb-4">
-                  <div className="p-2 bg-green-100 rounded-lg">
-                    <Building className="h-6 w-6 text-green-600" />
+        {/* Stats Grid */}
+        <motion.div variants={itemVariants} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {placementStats.map((stat, index) => {
+            const Icon = stat.icon
+            return (
+              <motion.div
+                key={stat.title}
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.3, delay: index * 0.1 }}
+                whileHover={{ scale: 1.02, y: -5 }}
+                className={`${stat.bgColor} p-6 rounded-xl border border-gray-200 dark:border-gray-700 transition-all duration-200 hover:shadow-lg`}
+              >
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-gray-600 dark:text-gray-400">{stat.title}</p>
+                    <p className="text-2xl font-bold text-gray-900 dark:text-white mt-1">{stat.value}</p>
                   </div>
-                  <div className="ml-4">
-                    <h4 className="text-lg font-semibold text-green-900">Congratulations! You're Placed!</h4>
-                    <p className="text-green-700">You have been successfully placed at {placementInfo.company}</p>
+                  <motion.div
+                    whileHover={{ rotate: 360 }}
+                    transition={{ duration: 0.5 }}
+                    className={`w-12 h-12 bg-gradient-to-r ${stat.color} rounded-lg flex items-center justify-center`}
+                  >
+                    <Icon className="h-6 w-6 text-white" />
+                  </motion.div>
+                </div>
+              </motion.div>
+            )
+          })}
+        </motion.div>
+
+        {/* Tabs */}
+        <motion.div
+          variants={itemVariants}
+          className="bg-white dark:bg-gray-800 p-1 rounded-xl border border-gray-200 dark:border-gray-700"
+        >
+          <div className="flex space-x-1">
+            {[
+              { id: "opportunities", label: "Job Opportunities", icon: Briefcase },
+              { id: "interviews", label: "Interviews", icon: Calendar },
+              { id: "documents", label: "Documents", icon: FileText },
+            ].map((tab) => {
+              const Icon = tab.icon
+              return (
+                <motion.button
+                  key={tab.id}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`flex-1 flex items-center justify-center space-x-2 py-3 px-4 rounded-lg transition-all duration-200 ${
+                    activeTab === tab.id
+                      ? "bg-blue-600 text-white shadow-lg"
+                      : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700"
+                  }`}
+                >
+                  <Icon className="h-4 w-4" />
+                  <span className="font-medium">{tab.label}</span>
+                </motion.button>
+              )
+            })}
+          </div>
+        </motion.div>
+
+        {/* Tab Content */}
+        {activeTab === "opportunities" && (
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-4">
+            {jobOpportunities.map((job, index) => (
+              <motion.div
+                key={job.id}
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.3, delay: index * 0.1 }}
+                whileHover={{ scale: 1.01, y: -2 }}
+                className="bg-white dark:bg-gray-800 p-6 rounded-xl border border-gray-200 dark:border-gray-700 hover:shadow-lg transition-all duration-200"
+              >
+                <div className="flex justify-between items-start mb-4">
+                  <div>
+                    <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-1">{job.title}</h3>
+                    <p className="text-blue-600 dark:text-blue-400 font-medium">{job.company}</p>
+                  </div>
+                  <span className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(job.status)}`}>
+                    {job.status === "applied" ? "Applied" : "Open"}
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                  <div className="flex items-center text-sm text-gray-600 dark:text-gray-400">
+                    <MapPin className="h-4 w-4 mr-2" />
+                    {job.location}
+                  </div>
+                  <div className="flex items-center text-sm text-gray-600 dark:text-gray-400">
+                    <Briefcase className="h-4 w-4 mr-2" />
+                    {job.type}
+                  </div>
+                  <div className="flex items-center text-sm text-gray-600 dark:text-gray-400">
+                    <Clock className="h-4 w-4 mr-2" />
+                    {job.posted}
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="space-y-4">
-                    <div className="flex items-center text-green-800">
-                      <Building className="h-5 w-5 mr-3" />
-                      <div>
-                        <span className="font-medium">Company:</span>
-                        <span className="ml-2">{placementInfo.company}</span>
-                      </div>
-                    </div>
+                <p className="text-gray-700 dark:text-gray-300 mb-4">{job.description}</p>
 
-                    <div className="flex items-center text-green-800">
-                      <User className="h-5 w-5 mr-3" />
-                      <div>
-                        <span className="font-medium">Role:</span>
-                        <span className="ml-2">{placementInfo.role}</span>
-                      </div>
-                    </div>
+                <div className="flex flex-wrap gap-2 mb-4">
+                  {job.requirements.map((req, reqIndex) => (
+                    <span
+                      key={reqIndex}
+                      className="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-md text-sm"
+                    >
+                      {req}
+                    </span>
+                  ))}
+                </div>
 
-                    <div className="flex items-center text-green-800">
-                      <DollarSign className="h-5 w-5 mr-3" />
-                      <div>
-                        <span className="font-medium">Package:</span>
-                        <span className="ml-2">₹{(placementInfo.package / 100000).toFixed(1)}L per annum</span>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center text-green-800">
-                      <MapPin className="h-5 w-5 mr-3" />
-                      <div>
-                        <span className="font-medium">Location:</span>
-                        <span className="ml-2">{placementInfo.location}</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="space-y-4">
-                    <div className="flex items-center text-green-800">
-                      <Calendar className="h-5 w-5 mr-3" />
-                      <div>
-                        <span className="font-medium">Joining Date:</span>
-                        <span className="ml-2">{new Date(placementInfo.joiningDate).toLocaleDateString()}</span>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center text-green-800">
-                      <Calendar className="h-5 w-5 mr-3" />
-                      <div>
-                        <span className="font-medium">Offer Date:</span>
-                        <span className="ml-2">{new Date(placementInfo.offerDate).toLocaleDateString()}</span>
-                      </div>
-                    </div>
-
-                    <div className="bg-white rounded-lg p-4 border border-green-200">
-                      <h5 className="font-medium text-green-900 mb-2">HR Contact</h5>
-                      <div className="space-y-1 text-sm text-green-800">
-                        <div className="flex items-center">
-                          <User className="h-4 w-4 mr-2" />
-                          <span>{placementInfo.hrContact.name}</span>
-                        </div>
-                        <div className="flex items-center">
-                          <Mail className="h-4 w-4 mr-2" />
-                          <span>{placementInfo.hrContact.email}</span>
-                        </div>
-                        <div className="flex items-center">
-                          <Phone className="h-4 w-4 mr-2" />
-                          <span>{placementInfo.hrContact.phone}</span>
-                        </div>
-                      </div>
-                    </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-lg font-semibold text-green-600 dark:text-green-400">{job.salary}</span>
+                  <div className="flex space-x-2">
+                    <motion.button
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center space-x-2"
+                    >
+                      <ExternalLink className="h-4 w-4" />
+                      <span>View Details</span>
+                    </motion.button>
+                    {job.status === "open" && (
+                      <motion.button
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+                      >
+                        Apply Now
+                      </motion.button>
+                    )}
                   </div>
                 </div>
-              </div>
-            ) : (
-              <div className="text-center py-8">
-                <div className="p-4 bg-gray-100 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
-                  <Building className="h-8 w-8 text-gray-400" />
-                </div>
-                <h4 className="text-lg font-medium text-gray-900 mb-2">Placement Process In Progress</h4>
-                <p className="text-gray-600">We're working on finding the best opportunities for you.</p>
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Upcoming Interviews */}
-        {upcomingInterviews.length > 0 && (
-          <div className="bg-white rounded-lg shadow">
-            <div className="px-6 py-4 border-b">
-              <h3 className="text-lg font-medium text-gray-900">Upcoming Interviews</h3>
-            </div>
-            <div className="p-6">
-              <div className="space-y-4">
-                {upcomingInterviews.map((interview) => (
-                  <div key={interview.id} className="border rounded-lg p-4 hover:shadow-md transition-shadow">
-                    <div className="flex items-center justify-between mb-3">
-                      <div className="flex items-center space-x-3">
-                        <div className="p-2 bg-blue-100 rounded-lg">
-                          <Building className="h-5 w-5 text-blue-600" />
-                        </div>
-                        <div>
-                          <h4 className="font-medium text-gray-900">{interview.company}</h4>
-                          <p className="text-sm text-gray-600">{interview.role}</p>
-                        </div>
-                      </div>
-                      <span className="px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
-                        {interview.type}
-                      </span>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-gray-600">
-                      <div className="flex items-center">
-                        <Calendar className="h-4 w-4 mr-2" />
-                        <span>{new Date(interview.date).toLocaleDateString()}</span>
-                      </div>
-                      <div className="flex items-center">
-                        <Clock className="h-4 w-4 mr-2" />
-                        <span>{interview.time}</span>
-                      </div>
-                      <div className="flex items-center">
-                        <User className="h-4 w-4 mr-2" />
-                        <span>{interview.interviewer}</span>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
+              </motion.div>
+            ))}
+          </motion.div>
         )}
 
-        {/* Placement History */}
-        <div className="bg-white rounded-lg shadow">
-          <div className="px-6 py-4 border-b">
-            <h3 className="text-lg font-medium text-gray-900">Application History</h3>
-          </div>
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Company
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Role
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Package
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Location
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Status
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Date
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {placementHistory.map((placement) => (
-                  <tr key={placement.id} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="flex items-center">
-                        <Building className="h-4 w-4 mr-2 text-gray-400" />
-                        <span className="text-sm font-medium text-gray-900">{placement.company}</span>
+        {activeTab === "interviews" && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden"
+          >
+            <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+              <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Interview Schedule</h2>
+            </div>
+            <div className="divide-y divide-gray-200 dark:divide-gray-700">
+              {interviews.map((interview, index) => (
+                <motion.div
+                  key={interview.id}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.3, delay: index * 0.1 }}
+                  whileHover={{ backgroundColor: "rgba(59, 130, 246, 0.05)" }}
+                  className="p-6 transition-colors duration-200"
+                >
+                  <div className="flex justify-between items-start">
+                    <div className="flex-1">
+                      <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-1">{interview.position}</h3>
+                      <p className="text-blue-600 dark:text-blue-400 font-medium mb-2">{interview.company}</p>
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-gray-600 dark:text-gray-400">
+                        <div className="flex items-center">
+                          <Calendar className="h-4 w-4 mr-2" />
+                          {new Date(interview.date).toLocaleDateString()}
+                        </div>
+                        <div className="flex items-center">
+                          <Clock className="h-4 w-4 mr-2" />
+                          {interview.time}
+                        </div>
+                        <div className="flex items-center">
+                          <Users className="h-4 w-4 mr-2" />
+                          {interview.interviewer}
+                        </div>
                       </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{placement.role}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      ₹{(placement.package / 100000).toFixed(1)}L
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{placement.location}</td>
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    </div>
+                    <div className="flex flex-col items-end space-y-2">
                       <span
-                        className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(placement.status)}`}
+                        className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(interview.status)}`}
                       >
-                        {placement.status}
+                        {interview.status.charAt(0).toUpperCase() + interview.status.slice(1)}
                       </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {new Date(placement.date).toLocaleDateString()}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        {/* Documents */}
-        <div className="bg-white rounded-lg shadow">
-          <div className="px-6 py-4 border-b">
-            <h3 className="text-lg font-medium text-gray-900">Placement Documents</h3>
-          </div>
-          <div className="p-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {documents.map((doc, index) => (
-                <div key={index} className="border rounded-lg p-4 flex items-center justify-between">
-                  <div className="flex items-center space-x-3">
-                    <FileText className="h-5 w-5 text-gray-400" />
-                    <div>
-                      <h4 className="font-medium text-gray-900">{doc.name}</h4>
-                      <p className="text-sm text-gray-500">Updated: {new Date(doc.lastUpdated).toLocaleDateString()}</p>
+                      <span className="text-xs text-gray-500 dark:text-gray-400">{interview.type}</span>
                     </div>
                   </div>
-                  <div className="flex items-center space-x-2">
-                    <span
-                      className={`px-2 py-1 text-xs font-semibold rounded-full ${getDocumentStatusColor(doc.status)}`}
-                    >
-                      {doc.status}
-                    </span>
-                    <button className="text-blue-600 hover:text-blue-800">
-                      <ExternalLink className="h-4 w-4" />
-                    </button>
-                  </div>
-                </div>
+                </motion.div>
               ))}
             </div>
-          </div>
-        </div>
+          </motion.div>
+        )}
 
-        {/* Placement Support */}
-        <div className="bg-blue-50 rounded-lg p-6">
-          <h3 className="text-lg font-medium text-blue-900 mb-2">Placement Support</h3>
-          <p className="text-blue-800 text-sm mb-4">
-            Our placement team is here to help you throughout your job search journey.
-          </p>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="bg-white rounded-lg p-4">
-              <h4 className="font-medium text-gray-900 mb-2">Placement Coordinator</h4>
-              <div className="space-y-1 text-sm text-gray-600">
-                <div className="flex items-center">
-                  <User className="h-4 w-4 mr-2" />
-                  <span>Ms. Priya Sharma</span>
-                </div>
-                <div className="flex items-center">
-                  <Mail className="h-4 w-4 mr-2" />
-                  <span>placements@institute.com</span>
-                </div>
-                <div className="flex items-center">
-                  <Phone className="h-4 w-4 mr-2" />
-                  <span>+91 9876543210</span>
-                </div>
-              </div>
+        {activeTab === "documents" && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-white dark:bg-gray-800 p-6 rounded-xl border border-gray-200 dark:border-gray-700"
+          >
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">Placement Documents</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {[
+                { name: "Resume", status: "uploaded", date: "2024-01-10" },
+                { name: "Cover Letter", status: "uploaded", date: "2024-01-10" },
+                { name: "Portfolio", status: "pending", date: null },
+                { name: "Certificates", status: "uploaded", date: "2024-01-08" },
+              ].map((doc, index) => (
+                <motion.div
+                  key={doc.name}
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.3, delay: index * 0.1 }}
+                  whileHover={{ scale: 1.02 }}
+                  className="p-4 border border-gray-200 dark:border-gray-700 rounded-lg hover:shadow-md transition-all duration-200"
+                >
+                  <div className="flex justify-between items-center">
+                    <div>
+                      <h3 className="font-medium text-gray-900 dark:text-white">{doc.name}</h3>
+                      {doc.date && (
+                        <p className="text-sm text-gray-500 dark:text-gray-400">
+                          Uploaded: {new Date(doc.date).toLocaleDateString()}
+                        </p>
+                      )}
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(doc.status)}`}>
+                        {doc.status.charAt(0).toUpperCase() + doc.status.slice(1)}
+                      </span>
+                      {doc.status === "uploaded" && (
+                        <motion.button
+                          whileHover={{ scale: 1.1 }}
+                          whileTap={{ scale: 0.9 }}
+                          className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
+                        >
+                          <Download className="h-4 w-4" />
+                        </motion.button>
+                      )}
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
             </div>
-            <div className="bg-white rounded-lg p-4">
-              <h4 className="font-medium text-gray-900 mb-2">Office Hours</h4>
-              <div className="space-y-1 text-sm text-gray-600">
-                <p>Monday - Friday: 9:00 AM - 6:00 PM</p>
-                <p>Saturday: 9:00 AM - 1:00 PM</p>
-                <p>Sunday: Closed</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+          </motion.div>
+        )}
+      </motion.div>
     </Layout>
   )
 }

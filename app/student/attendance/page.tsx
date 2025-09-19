@@ -1,351 +1,304 @@
 "use client"
 
 import { useState } from "react"
+import { motion } from "framer-motion"
+import { Calendar, Clock, CheckCircle, XCircle, AlertCircle, TrendingUp, BookOpen } from "lucide-react"
 import Layout from "@/components/Layout"
-import { Calendar, Check, X, Clock, TrendingUp } from "lucide-react"
 
-export default function StudentAttendancePage() {
-  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth())
-  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear())
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1,
+    },
+  },
+}
 
-  // Mock attendance data
-  const [attendanceData] = useState({
-    totalClasses: 22,
-    present: 19,
-    absent: 2,
-    late: 1,
-    percentage: 86,
-  })
+const itemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.5,
+    },
+  },
+}
 
-  // Mock calendar data for the selected month
-  const [calendarData] = useState([
-    { date: 1, status: "present" },
-    { date: 2, status: "present" },
-    { date: 3, status: "absent" },
-    { date: 5, status: "present" },
-    { date: 8, status: "late" },
-    { date: 9, status: "present" },
-    { date: 10, status: "present" },
-    { date: 12, status: "present" },
-    { date: 15, status: "present" },
-    { date: 16, status: "absent" },
-    { date: 17, status: "present" },
-    { date: 19, status: "present" },
-    { date: 22, status: "present" },
-    { date: 23, status: "present" },
-    { date: 24, status: "present" },
-    { date: 26, status: "present" },
-    { date: 29, status: "present" },
-    { date: 30, status: "present" },
-    { date: 31, status: "present" },
-  ])
+export default function StudentAttendance() {
+  const [selectedMonth, setSelectedMonth] = useState("2024-01")
 
-  const [weeklyStats] = useState([
-    { week: "Week 1", present: 3, total: 3, percentage: 100 },
-    { week: "Week 2", present: 2, total: 3, percentage: 67 },
-    { week: "Week 3", present: 3, total: 3, percentage: 100 },
-    { week: "Week 4", present: 3, total: 3, percentage: 100 },
-    { week: "Week 5", present: 2, total: 3, percentage: 67 },
-  ])
-
-  const months = [
-    "January",
-    "February",
-    "March",
-    "April",
-    "May",
-    "June",
-    "July",
-    "August",
-    "September",
-    "October",
-    "November",
-    "December",
+  const attendanceStats = [
+    {
+      title: "Total Classes",
+      value: "45",
+      icon: BookOpen,
+      color: "from-blue-500 to-blue-600",
+      bgColor: "bg-blue-50 dark:bg-blue-900/20",
+    },
+    {
+      title: "Present",
+      value: "38",
+      icon: CheckCircle,
+      color: "from-green-500 to-green-600",
+      bgColor: "bg-green-50 dark:bg-green-900/20",
+    },
+    {
+      title: "Absent",
+      value: "5",
+      icon: XCircle,
+      color: "from-red-500 to-red-600",
+      bgColor: "bg-red-50 dark:bg-red-900/20",
+    },
+    {
+      title: "Attendance Rate",
+      value: "84%",
+      icon: TrendingUp,
+      color: "from-purple-500 to-purple-600",
+      bgColor: "bg-purple-50 dark:bg-purple-900/20",
+    },
   ]
 
-  const getDaysInMonth = (month: number, year: number) => {
-    return new Date(year, month + 1, 0).getDate()
-  }
+  const attendanceRecords = [
+    {
+      id: 1,
+      date: "2024-01-15",
+      course: "React Fundamentals",
+      time: "10:00 AM - 12:00 PM",
+      status: "present",
+      instructor: "John Doe",
+    },
+    {
+      id: 2,
+      date: "2024-01-14",
+      course: "JavaScript Advanced",
+      time: "2:00 PM - 4:00 PM",
+      status: "present",
+      instructor: "Jane Smith",
+    },
+    {
+      id: 3,
+      date: "2024-01-13",
+      course: "Database Systems",
+      time: "9:00 AM - 11:00 AM",
+      status: "absent",
+      instructor: "Mike Johnson",
+    },
+    {
+      id: 4,
+      date: "2024-01-12",
+      course: "Web Design",
+      time: "3:00 PM - 5:00 PM",
+      status: "present",
+      instructor: "Sarah Wilson",
+    },
+    {
+      id: 5,
+      date: "2024-01-11",
+      course: "React Fundamentals",
+      time: "10:00 AM - 12:00 PM",
+      status: "late",
+      instructor: "John Doe",
+    },
+  ]
 
-  const getFirstDayOfMonth = (month: number, year: number) => {
-    return new Date(year, month, 1).getDay()
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case "present":
+        return "bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400"
+      case "absent":
+        return "bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400"
+      case "late":
+        return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400"
+      default:
+        return "bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400"
+    }
   }
 
   const getStatusIcon = (status: string) => {
     switch (status) {
       case "present":
-        return <Check className="h-4 w-4 text-green-600" />
+        return <CheckCircle className="h-4 w-4 text-green-500" />
       case "absent":
-        return <X className="h-4 w-4 text-red-600" />
+        return <XCircle className="h-4 w-4 text-red-500" />
       case "late":
-        return <Clock className="h-4 w-4 text-yellow-600" />
+        return <AlertCircle className="h-4 w-4 text-yellow-500" />
       default:
-        return null
+        return <Clock className="h-4 w-4 text-gray-500" />
     }
-  }
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "present":
-        return "bg-green-100 text-green-800 border-green-200"
-      case "absent":
-        return "bg-red-100 text-red-800 border-red-200"
-      case "late":
-        return "bg-yellow-100 text-yellow-800 border-yellow-200"
-      default:
-        return "bg-gray-100 text-gray-800 border-gray-200"
-    }
-  }
-
-  const renderCalendar = () => {
-    const daysInMonth = getDaysInMonth(selectedMonth, selectedYear)
-    const firstDay = getFirstDayOfMonth(selectedMonth, selectedYear)
-    const days = []
-
-    // Empty cells for days before the first day of the month
-    for (let i = 0; i < firstDay; i++) {
-      days.push(<div key={`empty-${i}`} className="h-12"></div>)
-    }
-
-    // Days of the month
-    for (let day = 1; day <= daysInMonth; day++) {
-      const attendanceRecord = calendarData.find((record) => record.date === day)
-      const status = attendanceRecord?.status
-
-      days.push(
-        <div
-          key={day}
-          className={`h-12 flex items-center justify-center border rounded-lg relative ${
-            status ? getStatusColor(status) : "bg-gray-50 border-gray-200"
-          }`}
-        >
-          <span className="text-sm font-medium">{day}</span>
-          {status && <div className="absolute top-1 right-1">{getStatusIcon(status)}</div>}
-        </div>,
-      )
-    }
-
-    return days
   }
 
   return (
     <Layout>
-      <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <h1 className="text-3xl font-bold text-gray-900">My Attendance</h1>
-          <div className="flex items-center space-x-2 text-sm text-gray-500">
-            <Calendar className="h-4 w-4" />
-            <span>{new Date().toLocaleDateString()}</span>
-          </div>
-        </div>
+      <motion.div variants={containerVariants} initial="hidden" animate="visible" className="space-y-6">
+        <motion.div variants={itemVariants}>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">Attendance Tracking</h1>
+          <p className="text-gray-600 dark:text-gray-400">Monitor your class attendance and track your progress</p>
+        </motion.div>
 
-        {/* Attendance Summary */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-          <div className="bg-white rounded-lg shadow p-6">
-            <div className="flex items-center">
-              <div className="p-2 bg-blue-100 rounded-lg">
-                <Calendar className="h-6 w-6 text-blue-600" />
-              </div>
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Total Classes</p>
-                <p className="text-2xl font-bold text-gray-900">{attendanceData.totalClasses}</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-lg shadow p-6">
-            <div className="flex items-center">
-              <div className="p-2 bg-green-100 rounded-lg">
-                <Check className="h-6 w-6 text-green-600" />
-              </div>
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Present</p>
-                <p className="text-2xl font-bold text-gray-900">{attendanceData.present}</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-lg shadow p-6">
-            <div className="flex items-center">
-              <div className="p-2 bg-red-100 rounded-lg">
-                <X className="h-6 w-6 text-red-600" />
-              </div>
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Absent</p>
-                <p className="text-2xl font-bold text-gray-900">{attendanceData.absent}</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-lg shadow p-6">
-            <div className="flex items-center">
-              <div className="p-2 bg-purple-100 rounded-lg">
-                <TrendingUp className="h-6 w-6 text-purple-600" />
-              </div>
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Percentage</p>
-                <p className="text-2xl font-bold text-gray-900">{attendanceData.percentage}%</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Calendar View */}
-        <div className="bg-white rounded-lg shadow">
-          <div className="px-6 py-4 border-b">
-            <div className="flex items-center justify-between">
-              <h3 className="text-lg font-medium text-gray-900">Attendance Calendar</h3>
-              <div className="flex space-x-4">
-                <select
-                  value={selectedMonth}
-                  onChange={(e) => setSelectedMonth(Number.parseInt(e.target.value))}
-                  className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                >
-                  {months.map((month, index) => (
-                    <option key={month} value={index}>
-                      {month}
-                    </option>
-                  ))}
-                </select>
-                <select
-                  value={selectedYear}
-                  onChange={(e) => setSelectedYear(Number.parseInt(e.target.value))}
-                  className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                >
-                  <option value={2024}>2024</option>
-                  <option value={2023}>2023</option>
-                </select>
-              </div>
-            </div>
-          </div>
-
-          <div className="p-6">
-            {/* Calendar Header */}
-            <div className="grid grid-cols-7 gap-2 mb-4">
-              {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
-                <div key={day} className="h-8 flex items-center justify-center text-sm font-medium text-gray-500">
-                  {day}
-                </div>
-              ))}
-            </div>
-
-            {/* Calendar Grid */}
-            <div className="grid grid-cols-7 gap-2">{renderCalendar()}</div>
-
-            {/* Legend */}
-            <div className="mt-6 flex items-center justify-center space-x-6">
-              <div className="flex items-center space-x-2">
-                <div className="w-4 h-4 bg-green-100 border border-green-200 rounded flex items-center justify-center">
-                  <Check className="h-3 w-3 text-green-600" />
-                </div>
-                <span className="text-sm text-gray-600">Present</span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <div className="w-4 h-4 bg-red-100 border border-red-200 rounded flex items-center justify-center">
-                  <X className="h-3 w-3 text-red-600" />
-                </div>
-                <span className="text-sm text-gray-600">Absent</span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <div className="w-4 h-4 bg-yellow-100 border border-yellow-200 rounded flex items-center justify-center">
-                  <Clock className="h-3 w-3 text-yellow-600" />
-                </div>
-                <span className="text-sm text-gray-600">Late</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Weekly Statistics */}
-        <div className="bg-white rounded-lg shadow">
-          <div className="px-6 py-4 border-b">
-            <h3 className="text-lg font-medium text-gray-900">Weekly Attendance</h3>
-          </div>
-          <div className="p-6">
-            <div className="space-y-4">
-              {weeklyStats.map((week, index) => (
-                <div key={index} className="flex items-center justify-between">
-                  <div className="flex items-center space-x-4">
-                    <span className="w-16 text-sm font-medium text-gray-900">{week.week}</span>
-                    <span className="text-sm text-gray-600">
-                      {week.present}/{week.total} classes
-                    </span>
+        {/* Stats Grid */}
+        <motion.div variants={itemVariants} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {attendanceStats.map((stat, index) => {
+            const Icon = stat.icon
+            return (
+              <motion.div
+                key={stat.title}
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.3, delay: index * 0.1 }}
+                whileHover={{ scale: 1.02, y: -5 }}
+                className={`${stat.bgColor} p-6 rounded-xl border border-gray-200 dark:border-gray-700 transition-all duration-200 hover:shadow-lg`}
+              >
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-gray-600 dark:text-gray-400">{stat.title}</p>
+                    <p className="text-2xl font-bold text-gray-900 dark:text-white mt-1">{stat.value}</p>
                   </div>
-                  <div className="flex items-center space-x-4">
-                    <div className="w-32 bg-gray-200 rounded-full h-2">
-                      <div
-                        className={`h-2 rounded-full ${
-                          week.percentage >= 80
-                            ? "bg-green-600"
-                            : week.percentage >= 60
-                              ? "bg-yellow-600"
-                              : "bg-red-600"
-                        }`}
-                        style={{ width: `${week.percentage}%` }}
-                      />
-                    </div>
-                    <span className="text-sm font-medium text-gray-900 w-12">{week.percentage}%</span>
-                  </div>
+                  <motion.div
+                    whileHover={{ rotate: 360 }}
+                    transition={{ duration: 0.5 }}
+                    className={`w-12 h-12 bg-gradient-to-r ${stat.color} rounded-lg flex items-center justify-center`}
+                  >
+                    <Icon className="h-6 w-6 text-white" />
+                  </motion.div>
                 </div>
-              ))}
+              </motion.div>
+            )
+          })}
+        </motion.div>
+
+        {/* Attendance Progress */}
+        <motion.div
+          variants={itemVariants}
+          className="bg-white dark:bg-gray-800 p-6 rounded-xl border border-gray-200 dark:border-gray-700"
+        >
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Monthly Progress</h2>
+            <motion.div
+              animate={{ rotate: [0, 360] }}
+              transition={{ duration: 4, repeat: Number.POSITIVE_INFINITY, ease: "linear" }}
+            >
+              <TrendingUp className="h-5 w-5 text-green-500" />
+            </motion.div>
+          </div>
+          <div className="space-y-4">
+            <div className="flex justify-between items-center">
+              <span className="text-sm font-medium text-gray-900 dark:text-white">Overall Attendance Rate</span>
+              <span className="text-sm text-gray-500 dark:text-gray-400">84%</span>
             </div>
-          </div>
-        </div>
-
-        {/* Attendance Requirements */}
-        <div className="bg-white rounded-lg shadow">
-          <div className="px-6 py-4 border-b">
-            <h3 className="text-lg font-medium text-gray-900">Attendance Requirements</h3>
-          </div>
-          <div className="p-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <h4 className="font-medium text-gray-900 mb-2">Current Status</h4>
-                <div className="space-y-2">
-                  <div className="flex justify-between">
-                    <span className="text-sm text-gray-600">Current Percentage:</span>
-                    <span
-                      className={`text-sm font-medium ${attendanceData.percentage >= 75 ? "text-green-600" : "text-red-600"}`}
-                    >
-                      {attendanceData.percentage}%
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-sm text-gray-600">Required Minimum:</span>
-                    <span className="text-sm font-medium text-gray-900">75%</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-sm text-gray-600">Status:</span>
-                    <span
-                      className={`text-sm font-medium ${attendanceData.percentage >= 75 ? "text-green-600" : "text-red-600"}`}
-                    >
-                      {attendanceData.percentage >= 75 ? "Meeting Requirements" : "Below Requirements"}
-                    </span>
-                  </div>
-                </div>
+            <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3">
+              <motion.div
+                initial={{ width: 0 }}
+                animate={{ width: "84%" }}
+                transition={{ duration: 1.5, delay: 0.5 }}
+                className="h-3 bg-gradient-to-r from-green-500 to-green-600 rounded-full"
+              />
+            </div>
+            <div className="grid grid-cols-3 gap-4 mt-4">
+              <div className="text-center">
+                <div className="text-2xl font-bold text-green-600 dark:text-green-400">38</div>
+                <div className="text-xs text-gray-500 dark:text-gray-400">Present</div>
               </div>
-
-              <div>
-                <h4 className="font-medium text-gray-900 mb-2">Recommendations</h4>
-                <div className="space-y-2 text-sm text-gray-600">
-                  {attendanceData.percentage >= 75 ? (
-                    <p>Great job! Keep maintaining regular attendance to stay above the minimum requirement.</p>
-                  ) : (
-                    <div>
-                      <p className="text-red-600 mb-2">Your attendance is below the required 75%. Please:</p>
-                      <ul className="list-disc list-inside space-y-1">
-                        <li>Attend all upcoming classes</li>
-                        <li>Contact your trainer if you have any issues</li>
-                        <li>Make up for missed classes if possible</li>
-                      </ul>
-                    </div>
-                  )}
-                </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-yellow-600 dark:text-yellow-400">2</div>
+                <div className="text-xs text-gray-500 dark:text-gray-400">Late</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-red-600 dark:text-red-400">5</div>
+                <div className="text-xs text-gray-500 dark:text-gray-400">Absent</div>
               </div>
             </div>
           </div>
-        </div>
-      </div>
+        </motion.div>
+
+        {/* Filter */}
+        <motion.div
+          variants={itemVariants}
+          className="bg-white dark:bg-gray-800 p-4 rounded-xl border border-gray-200 dark:border-gray-700"
+        >
+          <div className="flex items-center space-x-4">
+            <Calendar className="h-5 w-5 text-gray-400" />
+            <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Select Month:</label>
+            <select
+              value={selectedMonth}
+              onChange={(e) => setSelectedMonth(e.target.value)}
+              className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+            >
+              <option value="2024-01">January 2024</option>
+              <option value="2023-12">December 2023</option>
+              <option value="2023-11">November 2023</option>
+              <option value="2023-10">October 2023</option>
+            </select>
+          </div>
+        </motion.div>
+
+        {/* Attendance Records */}
+        <motion.div
+          variants={itemVariants}
+          className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden"
+        >
+          <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Recent Attendance</h2>
+          </div>
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead className="bg-gray-50 dark:bg-gray-700">
+                <tr>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    Date
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    Course
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    Time
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    Instructor
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    Status
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                {attendanceRecords.map((record, index) => (
+                  <motion.tr
+                    key={record.id}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.3, delay: index * 0.1 }}
+                    whileHover={{ backgroundColor: "rgba(59, 130, 246, 0.05)" }}
+                    className="transition-colors duration-200"
+                  >
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                      {new Date(record.date).toLocaleDateString()}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                      {record.course}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                      {record.time}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                      {record.instructor}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="flex items-center space-x-2">
+                        {getStatusIcon(record.status)}
+                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(record.status)}`}>
+                          {record.status.charAt(0).toUpperCase() + record.status.slice(1)}
+                        </span>
+                      </div>
+                    </td>
+                  </motion.tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </motion.div>
+      </motion.div>
     </Layout>
   )
 }

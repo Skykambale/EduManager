@@ -1,246 +1,289 @@
 "use client"
 
 import { useState } from "react"
-import Layout from "@/components/Layout"
-import { Users, ClipboardList, Calendar, CheckCircle, Clock, UserCheck } from "lucide-react"
+import Layout from "../../../components/Layout"
+import {
+  Users,
+  ClipboardList,
+  Award,
+  Calendar,
+  TrendingUp,
+  BookOpen,
+  CheckCircle,
+  Clock,
+  Star,
+  MessageSquare,
+} from "lucide-react"
+import { motion } from "framer-motion"
 
 export default function TrainerDashboard() {
-  const [assignedBatches] = useState([
-    { id: 1, name: "React Development", students: 25, schedule: "Mon-Wed-Fri 10:00-12:00", nextClass: "2024-01-25" },
-    { id: 2, name: "Advanced JavaScript", students: 18, schedule: "Tue-Thu 14:00-16:00", nextClass: "2024-01-24" },
+  const [stats] = useState({
+    totalStudents: 45,
+    activeTasks: 8,
+    completedTasks: 23,
+    averageGrade: 8.7,
+    attendanceRate: 92,
+    upcomingClasses: 3,
+  })
+
+  const [upcomingClasses] = useState([
+    { id: 1, subject: "React Fundamentals", time: "10:00 AM", students: 15, room: "Room A1" },
+    { id: 2, subject: "JavaScript Advanced", time: "2:00 PM", students: 12, room: "Room B2" },
+    { id: 3, subject: "Node.js Basics", time: "4:00 PM", students: 18, room: "Room C3" },
   ])
 
-  const [recentTasks] = useState([
-    {
-      id: 1,
-      title: "React Hooks Assignment",
-      batch: "React Development",
-      submissions: 20,
-      total: 25,
-      dueDate: "2024-01-26",
-    },
-    {
-      id: 2,
-      title: "JavaScript ES6 Quiz",
-      batch: "Advanced JavaScript",
-      submissions: 15,
-      total: 18,
-      dueDate: "2024-01-25",
-    },
+  const [recentSubmissions] = useState([
+    { id: 1, student: "John Doe", task: "React Component Assignment", submitted: "2 hours ago", status: "pending" },
+    { id: 2, student: "Sarah Wilson", task: "JavaScript Quiz", submitted: "4 hours ago", status: "graded" },
+    { id: 3, student: "Mike Johnson", task: "Portfolio Project", submitted: "1 day ago", status: "reviewed" },
   ])
 
-  const [todayAttendance] = useState([
-    { batch: "React Development", present: 22, total: 25, percentage: 88 },
-    { batch: "Advanced JavaScript", present: 16, total: 18, percentage: 89 },
-  ])
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1,
+      },
+    },
+  }
+
+  const itemVariants = {
+    hidden: { y: 20, opacity: 0 },
+    visible: {
+      y: 0,
+      opacity: 1,
+      transition: {
+        duration: 0.5,
+      },
+    },
+  }
 
   return (
     <Layout>
-      <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <h1 className="text-3xl font-bold text-gray-900">Trainer Dashboard</h1>
-          <div className="flex items-center space-x-2 text-sm text-gray-500">
-            <Calendar className="h-4 w-4" />
-            <span>{new Date().toLocaleDateString()}</span>
+      <motion.div variants={containerVariants} initial="hidden" animate="visible" className="space-y-6">
+        {/* Header */}
+        <motion.div variants={itemVariants} className="flex justify-between items-center">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Trainer Dashboard</h1>
+            <p className="text-gray-600 dark:text-gray-400 mt-1">Manage your classes and track student progress</p>
           </div>
-        </div>
-
-        {/* Quick Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-          <div className="bg-white rounded-lg shadow p-6">
-            <div className="flex items-center">
-              <div className="p-2 bg-blue-100 rounded-lg">
-                <Users className="h-6 w-6 text-blue-600" />
-              </div>
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Total Students</p>
-                <p className="text-2xl font-bold text-gray-900">43</p>
-              </div>
+          <motion.div
+            whileHover={{ scale: 1.05 }}
+            className="bg-gradient-to-r from-green-500 to-blue-500 text-white px-6 py-3 rounded-xl shadow-lg"
+          >
+            <div className="flex items-center gap-2">
+              <Star className="h-5 w-5" />
+              <span className="font-semibold">Rating: 4.8/5</span>
             </div>
-          </div>
+          </motion.div>
+        </motion.div>
 
-          <div className="bg-white rounded-lg shadow p-6">
-            <div className="flex items-center">
-              <div className="p-2 bg-green-100 rounded-lg">
-                <ClipboardList className="h-6 w-6 text-green-600" />
-              </div>
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Active Tasks</p>
-                <p className="text-2xl font-bold text-gray-900">8</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-lg shadow p-6">
-            <div className="flex items-center">
-              <div className="p-2 bg-yellow-100 rounded-lg">
-                <CheckCircle className="h-6 w-6 text-yellow-600" />
-              </div>
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Avg Attendance</p>
-                <p className="text-2xl font-bold text-gray-900">88%</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-lg shadow p-6">
-            <div className="flex items-center">
-              <div className="p-2 bg-purple-100 rounded-lg">
-                <Clock className="h-6 w-6 text-purple-600" />
-              </div>
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Pending Grades</p>
-                <p className="text-2xl font-bold text-gray-900">12</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Assigned Batches */}
-        <div className="bg-white rounded-lg shadow">
-          <div className="px-6 py-4 border-b">
-            <h3 className="text-lg font-medium text-gray-900">My Batches</h3>
-          </div>
-          <div className="p-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {assignedBatches.map((batch) => (
-                <div key={batch.id} className="border rounded-lg p-4 hover:shadow-md transition-shadow">
-                  <div className="flex items-center justify-between mb-3">
-                    <h4 className="text-lg font-semibold text-gray-900">{batch.name}</h4>
-                    <span className="text-sm text-gray-500">{batch.students} students</span>
-                  </div>
-                  <div className="space-y-2 text-sm text-gray-600">
-                    <div className="flex items-center">
-                      <Clock className="h-4 w-4 mr-2" />
-                      <span>{batch.schedule}</span>
-                    </div>
-                    <div className="flex items-center">
-                      <Calendar className="h-4 w-4 mr-2" />
-                      <span>Next class: {new Date(batch.nextClass).toLocaleDateString()}</span>
-                    </div>
-                  </div>
-                  <div className="mt-4 flex space-x-2">
-                    <a
-                      href="/trainer/attendance"
-                      className="flex-1 bg-blue-600 text-white text-center py-2 rounded-lg hover:bg-blue-700 text-sm"
-                    >
-                      Take Attendance
-                    </a>
-                    <a
-                      href="/trainer/tasks"
-                      className="flex-1 bg-green-600 text-white text-center py-2 rounded-lg hover:bg-green-700 text-sm"
-                    >
-                      Assign Task
-                    </a>
-                  </div>
+        {/* Stats Grid */}
+        <motion.div variants={itemVariants} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {[
+            {
+              title: "My Students",
+              value: stats.totalStudents,
+              icon: Users,
+              color: "from-blue-500 to-blue-600",
+              change: "+5 this month",
+            },
+            {
+              title: "Active Tasks",
+              value: stats.activeTasks,
+              icon: ClipboardList,
+              color: "from-purple-500 to-purple-600",
+              change: "2 due today",
+            },
+            {
+              title: "Average Grade",
+              value: stats.averageGrade,
+              icon: Award,
+              color: "from-green-500 to-green-600",
+              change: "+0.3 this month",
+            },
+          ].map((stat, index) => (
+            <motion.div
+              key={stat.title}
+              whileHover={{ scale: 1.02, y: -5 }}
+              className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700"
+            >
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-gray-600 dark:text-gray-400">{stat.title}</p>
+                  <p className="text-2xl font-bold text-gray-900 dark:text-white mt-1">{stat.value}</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{stat.change}</p>
                 </div>
+                <motion.div
+                  whileHover={{ rotate: 360 }}
+                  transition={{ duration: 0.5 }}
+                  className={`w-12 h-12 bg-gradient-to-r ${stat.color} rounded-xl flex items-center justify-center`}
+                >
+                  <stat.icon className="h-6 w-6 text-white" />
+                </motion.div>
+              </div>
+            </motion.div>
+          ))}
+        </motion.div>
+
+        {/* Main Content Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Upcoming Classes */}
+          <motion.div
+            variants={itemVariants}
+            className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700"
+          >
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
+                <Calendar className="h-5 w-5 text-blue-500" />
+                Today's Classes
+              </h3>
+              <span className="text-sm text-gray-500 dark:text-gray-400">{upcomingClasses.length} classes</span>
+            </div>
+            <div className="space-y-3">
+              {upcomingClasses.map((class_, index) => (
+                <motion.div
+                  key={class_.id}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: index * 0.1 }}
+                  whileHover={{ scale: 1.02 }}
+                  className="p-4 border border-gray-200 dark:border-gray-700 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition-all duration-200"
+                >
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h4 className="font-medium text-gray-900 dark:text-white">{class_.subject}</h4>
+                      <div className="flex items-center gap-4 mt-1 text-sm text-gray-500 dark:text-gray-400">
+                        <span className="flex items-center gap-1">
+                          <Clock className="h-4 w-4" />
+                          {class_.time}
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <Users className="h-4 w-4" />
+                          {class_.students} students
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <BookOpen className="h-4 w-4" />
+                          {class_.room}
+                        </span>
+                      </div>
+                    </div>
+                    <motion.button
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.9 }}
+                      className="bg-blue-500 text-white px-3 py-1 rounded-lg text-sm hover:bg-blue-600 transition-colors"
+                    >
+                      Start
+                    </motion.button>
+                  </div>
+                </motion.div>
               ))}
             </div>
-          </div>
-        </div>
+          </motion.div>
 
-        {/* Recent Tasks & Today's Attendance */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Recent Tasks */}
-          <div className="bg-white rounded-lg shadow">
-            <div className="px-6 py-4 border-b">
-              <h3 className="text-lg font-medium text-gray-900">Recent Tasks</h3>
+          {/* Recent Submissions */}
+          <motion.div
+            variants={itemVariants}
+            className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700"
+          >
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
+                <MessageSquare className="h-5 w-5 text-purple-500" />
+                Recent Submissions
+              </h3>
+              <span className="text-sm text-gray-500 dark:text-gray-400">{recentSubmissions.length} pending</span>
             </div>
-            <div className="p-6">
-              <div className="space-y-4">
-                {recentTasks.map((task) => (
-                  <div key={task.id} className="border rounded-lg p-4">
-                    <div className="flex items-center justify-between mb-2">
-                      <h4 className="font-medium text-gray-900">{task.title}</h4>
-                      <span className="text-xs text-gray-500">{task.batch}</span>
+            <div className="space-y-3">
+              {recentSubmissions.map((submission, index) => (
+                <motion.div
+                  key={submission.id}
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: index * 0.1 }}
+                  whileHover={{ scale: 1.02 }}
+                  className="p-4 border border-gray-200 dark:border-gray-700 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition-all duration-200"
+                >
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h4 className="font-medium text-gray-900 dark:text-white">{submission.student}</h4>
+                      <p className="text-sm text-gray-600 dark:text-gray-400">{submission.task}</p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{submission.submitted}</p>
                     </div>
-                    <div className="flex items-center justify-between">
-                      <div className="text-sm text-gray-600">
-                        Submissions: {task.submissions}/{task.total}
-                      </div>
-                      <div className="text-sm text-gray-500">Due: {new Date(task.dueDate).toLocaleDateString()}</div>
-                    </div>
-                    <div className="mt-2 bg-gray-200 rounded-full h-2">
-                      <div
-                        className="bg-blue-600 h-2 rounded-full"
-                        style={{ width: `${(task.submissions / task.total) * 100}%` }}
-                      />
+                    <div className="flex items-center gap-2">
+                      <span
+                        className={`px-2 py-1 rounded-full text-xs font-medium ${
+                          submission.status === "pending"
+                            ? "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200"
+                            : submission.status === "graded"
+                              ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
+                              : "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200"
+                        }`}
+                      >
+                        {submission.status}
+                      </span>
+                      <motion.button
+                        whileHover={{ scale: 1.1 }}
+                        whileTap={{ scale: 0.9 }}
+                        className="text-blue-500 hover:text-blue-600 transition-colors"
+                      >
+                        <CheckCircle className="h-4 w-4" />
+                      </motion.button>
                     </div>
                   </div>
-                ))}
-              </div>
+                </motion.div>
+              ))}
             </div>
-          </div>
+          </motion.div>
+        </div>
 
-          {/* Today's Attendance */}
-          <div className="bg-white rounded-lg shadow">
-            <div className="px-6 py-4 border-b">
-              <h3 className="text-lg font-medium text-gray-900">Today's Attendance</h3>
-            </div>
-            <div className="p-6">
-              <div className="space-y-4">
-                {todayAttendance.map((attendance, index) => (
-                  <div key={index} className="border rounded-lg p-4">
-                    <div className="flex items-center justify-between mb-2">
-                      <h4 className="font-medium text-gray-900">{attendance.batch}</h4>
-                      <span className="text-sm font-medium text-green-600">{attendance.percentage}%</span>
-                    </div>
-                    <div className="text-sm text-gray-600 mb-2">
-                      Present: {attendance.present}/{attendance.total} students
-                    </div>
-                    <div className="bg-gray-200 rounded-full h-2">
-                      <div className="bg-green-600 h-2 rounded-full" style={{ width: `${attendance.percentage}%` }} />
-                    </div>
+        {/* Performance Overview */}
+        <motion.div
+          variants={itemVariants}
+          className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700"
+        >
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+            <TrendingUp className="h-5 w-5 text-green-500" />
+            Performance Overview
+          </h3>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {[
+              { label: "Attendance Rate", value: stats.attendanceRate, color: "bg-blue-500" },
+              { label: "Task Completion", value: 89, color: "bg-green-500" },
+              { label: "Student Satisfaction", value: 94, color: "bg-purple-500" },
+            ].map((metric) => (
+              <div key={metric.label} className="text-center">
+                <div className="relative w-20 h-20 mx-auto mb-2">
+                  <svg className="w-20 h-20 transform -rotate-90" viewBox="0 0 36 36">
+                    <path
+                      className="text-gray-200 dark:text-gray-700"
+                      stroke="currentColor"
+                      strokeWidth="3"
+                      fill="none"
+                      d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                    />
+                    <motion.path
+                      initial={{ strokeDasharray: "0 100" }}
+                      animate={{ strokeDasharray: `${metric.value} 100` }}
+                      transition={{ duration: 1, delay: 0.5 }}
+                      className={metric.color.replace("bg-", "text-")}
+                      stroke="currentColor"
+                      strokeWidth="3"
+                      strokeLinecap="round"
+                      fill="none"
+                      d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                    />
+                  </svg>
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <span className="text-lg font-bold text-gray-900 dark:text-white">{metric.value}%</span>
                   </div>
-                ))}
+                </div>
+                <p className="text-sm font-medium text-gray-600 dark:text-gray-400">{metric.label}</p>
               </div>
-            </div>
+            ))}
           </div>
-        </div>
-
-        {/* Quick Actions */}
-        <div className="bg-white rounded-lg shadow">
-          <div className="px-6 py-4 border-b">
-            <h3 className="text-lg font-medium text-gray-900">Quick Actions</h3>
-          </div>
-          <div className="p-6">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <a
-                href="/trainer/attendance"
-                className="flex items-center p-4 border rounded-lg hover:bg-gray-50 transition-colors"
-              >
-                <UserCheck className="h-8 w-8 text-blue-600 mr-3" />
-                <div>
-                  <h4 className="font-medium text-gray-900">Mark Attendance</h4>
-                  <p className="text-sm text-gray-500">Take attendance for today's classes</p>
-                </div>
-              </a>
-
-              <a
-                href="/trainer/tasks"
-                className="flex items-center p-4 border rounded-lg hover:bg-gray-50 transition-colors"
-              >
-                <ClipboardList className="h-8 w-8 text-green-600 mr-3" />
-                <div>
-                  <h4 className="font-medium text-gray-900">Assign New Task</h4>
-                  <p className="text-sm text-gray-500">Create and assign tasks to batches</p>
-                </div>
-              </a>
-
-              <a
-                href="/trainer/grading"
-                className="flex items-center p-4 border rounded-lg hover:bg-gray-50 transition-colors"
-              >
-                <CheckCircle className="h-8 w-8 text-purple-600 mr-3" />
-                <div>
-                  <h4 className="font-medium text-gray-900">Grade Submissions</h4>
-                  <p className="text-sm text-gray-500">Review and grade student submissions</p>
-                </div>
-              </a>
-            </div>
-          </div>
-        </div>
-      </div>
+        </motion.div>
+      </motion.div>
     </Layout>
   )
 }

@@ -1,200 +1,195 @@
 "use client"
 
 import type React from "react"
+
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import { Eye, EyeOff, User, Lock, Moon, Sun, AlertCircle, CheckCircle } from "lucide-react"
-import { useTheme } from "../../contexts/ThemeContext"
+import { motion } from "framer-motion"
+import { GraduationCap, Mail, Lock, Eye, EyeOff, Sparkles } from "lucide-react"
 
-export default function LoginPage() {
+export default function Login() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
-  const [role, setRole] = useState("admin")
+  const [role, setRole] = useState("student")
   const [showPassword, setShowPassword] = useState(false)
-  const [errors, setErrors] = useState<{ email?: string; password?: string }>({})
-  const [isLoading, setIsLoading] = useState(false)
+  const [loading, setLoading] = useState(false)
   const router = useRouter()
-  const { theme, toggleTheme } = useTheme()
 
-  const validateForm = () => {
-    const newErrors: { email?: string; password?: string } = {}
-
-    // Email validation
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-    if (!email) {
-      newErrors.email = "Email is required"
-    } else if (!emailRegex.test(email)) {
-      newErrors.email = "Please enter a valid email address"
-    }
-
-    // Password validation
-    if (!password) {
-      newErrors.password = "Password is required"
-    } else if (password.length < 8) {
-      newErrors.password = "Password must be at least 8 characters long"
-    }
-
-    setErrors(newErrors)
-    return Object.keys(newErrors).length === 0
-  }
-
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    setLoading(true)
 
-    if (!validateForm()) {
-      return
-    }
-
-    setIsLoading(true)
-
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1500))
-
-    // Store user data in localStorage
-    const userData = { email, role }
-    localStorage.setItem("user", JSON.stringify(userData))
-
-    // Redirect based on role
-    switch (role) {
-      case "admin":
-        router.push("/admin/dashboard")
-        break
-      case "trainer":
-        router.push("/trainer/dashboard")
-        break
-      case "student":
-        router.push("/student/dashboard")
-        break
-    }
-
-    setIsLoading(false)
+    // Simulate login
+    setTimeout(() => {
+      const user = { email, role }
+      localStorage.setItem("user", JSON.stringify(user))
+      router.push(`/${role}/dashboard`)
+      setLoading(false)
+    }, 1000)
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-gray-900 dark:via-blue-900 dark:to-indigo-900 flex items-center justify-center p-4 transition-all duration-300">
-      {/* Theme Toggle */}
-      <button
-        onClick={toggleTheme}
-        className="fixed top-6 right-6 p-3 rounded-full bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-200 dark:border-gray-700"
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 flex items-center justify-center p-4">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
+        className="max-w-md w-full space-y-8"
       >
-        {theme === "light" ? (
-          <Moon className="h-5 w-5 text-gray-700 dark:text-gray-300" />
-        ) : (
-          <Sun className="h-5 w-5 text-yellow-500" />
-        )}
-      </button>
-
-      <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-3xl shadow-2xl w-full max-w-md p-8 border border-gray-200/50 dark:border-gray-700/50">
-        <div className="text-center mb-8">
-          <div className="w-16 h-16 bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
-            <span className="text-white text-2xl font-bold">IMS</span>
-          </div>
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 dark:from-white dark:to-gray-300 bg-clip-text text-transparent mb-2">
-            Welcome Back
-          </h1>
-          <p className="text-gray-600 dark:text-gray-400">Sign in to your account</p>
-        </div>
-
-        <form onSubmit={handleLogin} className="space-y-6">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Role</label>
-            <select
-              value={role}
-              onChange={(e) => setRole(e.target.value)}
-              className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-all duration-200"
-            >
-              <option value="admin">Admin</option>
-              <option value="trainer">Trainer</option>
-              <option value="student">Student</option>
-            </select>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Email</label>
-            <div className="relative">
-              <User className="absolute left-3 top-3.5 h-5 w-5 text-gray-400" />
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => {
-                  setEmail(e.target.value)
-                  if (errors.email) setErrors((prev) => ({ ...prev, email: undefined }))
-                }}
-                className={`w-full pl-10 pr-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-all duration-200 ${
-                  errors.email ? "border-red-500 dark:border-red-400" : "border-gray-300 dark:border-gray-600"
-                }`}
-                placeholder="Enter your email"
-              />
-              {errors.email && <AlertCircle className="absolute right-3 top-3.5 h-5 w-5 text-red-500" />}
-            </div>
-            {errors.email && (
-              <p className="mt-1 text-sm text-red-600 dark:text-red-400 flex items-center">
-                <AlertCircle className="h-4 w-4 mr-1" />
-                {errors.email}
-              </p>
-            )}
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Password</label>
-            <div className="relative">
-              <Lock className="absolute left-3 top-3.5 h-5 w-5 text-gray-400" />
-              <input
-                type={showPassword ? "text" : "password"}
-                value={password}
-                onChange={(e) => {
-                  setPassword(e.target.value)
-                  if (errors.password) setErrors((prev) => ({ ...prev, password: undefined }))
-                }}
-                className={`w-full pl-10 pr-12 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-all duration-200 ${
-                  errors.password ? "border-red-500 dark:border-red-400" : "border-gray-300 dark:border-gray-600"
-                }`}
-                placeholder="Enter your password"
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-3.5 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
-              >
-                {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
-              </button>
-            </div>
-            {errors.password && (
-              <p className="mt-1 text-sm text-red-600 dark:text-red-400 flex items-center">
-                <AlertCircle className="h-4 w-4 mr-1" />
-                {errors.password}
-              </p>
-            )}
-            {password && password.length >= 8 && (
-              <p className="mt-1 text-sm text-green-600 dark:text-green-400 flex items-center">
-                <CheckCircle className="h-4 w-4 mr-1" />
-                Password strength: Good
-              </p>
-            )}
-          </div>
-
-          <button
-            type="submit"
-            disabled={isLoading}
-            className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white py-3 rounded-xl transition-all duration-200 font-medium shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+        <motion.div
+          initial={{ scale: 0.8 }}
+          animate={{ scale: 1 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+          className="text-center"
+        >
+          <motion.div
+            whileHover={{
+              rotate: [0, -10, 10, 0],
+              scale: 1.1,
+            }}
+            transition={{ duration: 0.5 }}
+            className="mx-auto h-16 w-16 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full flex items-center justify-center mb-4"
           >
-            {isLoading ? (
-              <>
-                <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
-                Signing In...
-              </>
-            ) : (
-              "Sign In"
-            )}
-          </button>
-        </form>
+            <GraduationCap className="h-8 w-8 text-white" />
+          </motion.div>
+          <motion.h2
+            className="text-3xl font-bold text-gray-900 dark:text-white"
+            whileHover={{
+              background: "linear-gradient(45deg, #3B82F6, #8B5CF6)",
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent",
+            }}
+          >
+            Sky Learners
+          </motion.h2>
+          <motion.div
+            animate={{
+              rotate: [0, 10, -10, 0],
+              scale: [1, 1.2, 1],
+            }}
+            transition={{
+              duration: 3,
+              repeat: Number.POSITIVE_INFINITY,
+              ease: "easeInOut",
+            }}
+            className="flex justify-center mt-2"
+          >
+            <Sparkles className="h-5 w-5 text-yellow-500" />
+          </motion.div>
+          <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">Sign in to your account</p>
+        </motion.div>
 
-        <div className="mt-6 text-center">
-          <p className="text-sm text-gray-600 dark:text-gray-400">
-            Demo credentials: any email with 8+ character password
-          </p>
-        </div>
-      </div>
+        <motion.form
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5, delay: 0.4 }}
+          className="mt-8 space-y-6"
+          onSubmit={handleSubmit}
+        >
+          <div className="space-y-4">
+            <motion.div whileFocus={{ scale: 1.02 }}>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Role</label>
+              <select
+                value={role}
+                onChange={(e) => setRole(e.target.value)}
+                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-all duration-200"
+              >
+                <option value="student">Student</option>
+                <option value="trainer">Trainer</option>
+                <option value="admin">Admin</option>
+              </select>
+            </motion.div>
+
+            <motion.div whileFocus={{ scale: 1.02 }}>
+              <label htmlFor="email" className="sr-only">
+                Email address
+              </label>
+              <div className="relative">
+                <Mail className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
+                <input
+                  id="email"
+                  name="email"
+                  type="email"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="appearance-none relative block w-full pl-10 pr-3 py-3 border border-gray-300 dark:border-gray-600 placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm bg-white dark:bg-gray-700 transition-all duration-200"
+                  placeholder="Email address"
+                />
+              </div>
+            </motion.div>
+
+            <motion.div whileFocus={{ scale: 1.02 }}>
+              <label htmlFor="password" className="sr-only">
+                Password
+              </label>
+              <div className="relative">
+                <Lock className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
+                <input
+                  id="password"
+                  name="password"
+                  type={showPassword ? "text" : "password"}
+                  required
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="appearance-none relative block w-full pl-10 pr-10 py-3 border border-gray-300 dark:border-gray-600 placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm bg-white dark:bg-gray-700 transition-all duration-200"
+                  placeholder="Password"
+                />
+                <motion.button
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-3 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                >
+                  {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                </motion.button>
+              </div>
+            </motion.div>
+          </div>
+
+          <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+            <button
+              type="submit"
+              disabled={loading}
+              className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+            >
+              {loading ? (
+                <motion.div
+                  animate={{ rotate: 360 }}
+                  transition={{ duration: 1, repeat: Number.POSITIVE_INFINITY, ease: "linear" }}
+                  className="w-5 h-5 border-2 border-white border-t-transparent rounded-full"
+                />
+              ) : (
+                "Sign in"
+              )}
+            </button>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.6 }}
+            className="text-center"
+          >
+            <div className="text-sm text-gray-600 dark:text-gray-400 space-y-2">
+              <p className="font-medium">Demo Accounts:</p>
+              <div className="space-y-1 text-xs">
+                <p>
+                  <span className="font-medium">Admin:</span> admin@skylearners.com
+                </p>
+                <p>
+                  <span className="font-medium">Trainer:</span> trainer@skylearners.com
+                </p>
+                <p>
+                  <span className="font-medium">Student:</span> student@skylearners.com
+                </p>
+                <p className="text-gray-500 dark:text-gray-500">Password: any</p>
+              </div>
+            </div>
+          </motion.div>
+        </motion.form>
+      </motion.div>
     </div>
   )
 }
